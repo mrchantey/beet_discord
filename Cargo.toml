@@ -32,10 +32,24 @@ io = [
     "beet/tungstenite",
     "beet/ureq",
 ]
+
+# for examples only
+chatbot_deploy = ["beet/deploy","beet/router","beet/lightsail_block"]
+chatbot_aws = ["beet/aws_sdk"]
+
+
 [dependencies]
 # beet = { path = "../beet", default-features=false }
 # beet = { path = "../beet", default-features=false, features = ["net", "json"] }
-beet = { workspace = true, features = ["net", "thread", "json", "bevy_scene"] }
+beet = { workspace = true, features = [
+	"net",
+	"thread",
+	"json",
+	"bevy_scene",
+	"infra",
+	"bindings_aws_common"
+]
+}
 twilight-model = { version = "0.17" }
 
 # --- Always compiled (discord_types + events) ---

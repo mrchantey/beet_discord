@@ -12,7 +12,7 @@
 			"initialization_options": {
 				"cargo": {
 					// "target": "wasm32-unknown-unknown",
-					"features": [],
+					"features": ["chatbot_deploy"],
 				},
 			},
 		},
@@ -28,7 +28,7 @@
 		"launch.ron",
 		"rustfmt.toml",
 		"CHANGELOG.md",
-		"Cargo.lock",
+		// "Cargo.lock",
 		// ".beet",
 		"**/.git",
 		".gitattributes",

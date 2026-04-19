@@ -2,3 +2,4 @@
 .env
 twilight-model
 .beet/channels
+.agent
