@@ -1,2 +1,3 @@
-# beet_discord
+# Beet Discord
+
 beet discord integration

@@ -1,0 +1,58 @@
+[workspace.dependencies]
+beet = { path = "../beet", default-features=false }
+# beet = { git = "https://github.com/mrchantey/beet.git", branch = "beet_stack", default-features=false }
+
+[package]
+name = "beet_discord"
+version = "0.0.1"
+edition = "2024"
+
+[lib]
+name = "beet_discord"
+path = "src/lib.rs"
+
+[[example]]
+name = "chatbot"
+path = "examples/chatbot.rs"
+required-features = ["io"]
+
+[features]
+default = ["io", "rustls-tls"]
+native-tls = ["beet/native-tls"]
+rustls-tls = ["beet/rustls-tls"]
+## Enable the gateway, HTTP, handlers, and Bevy bot wiring.
+io = [
+    "dep:async-channel",
+    "dep:async-lock",
+    "dep:dotenv",
+    "dep:rand",
+    "dep:tracing-subscriber",
+    "dep:futures-lite",
+    "beet/net",
+    "beet/tungstenite",
+    "beet/ureq",
+]
+[dependencies]
+# beet = { path = "../beet", default-features=false }
+# beet = { path = "../beet", default-features=false, features = ["net", "json"] }
+beet = { workspace = true, features = ["net", "thread", "json", "bevy_scene"] }
+twilight-model = { version = "0.17" }
+
+# --- Always compiled (discord_types + events) ---
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_repr = "0.1"
+tracing = "0.1"
+chrono = "0.4"
+extend = "1"
+
+# --- IO feature only (discord_io: gateway, http, bot, handlers) ---
+async-channel = { version = "2", optional = true }
+async-lock = { version = "3", optional = true }
+dotenv = { version = "0.15", optional = true }
+rand = { version = "0.8", optional = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"], optional = true }
+futures-lite = { version = "2", optional = true }
+
+[dev-dependencies]
+beet = { workspace = true, features = ["testing"] }
