@@ -21,19 +21,21 @@
 //! `use crate::prelude::*;` (or `use hello_discord::prelude::*;`) brings in
 //! all types and extension traits *defined in this crate*.
 
+mod beet_action;
+pub mod beet_thread;
 #[cfg(feature = "io")]
 pub mod discord_io;
 pub mod discord_types;
-pub mod beet_thread;
 #[cfg(feature = "io")]
 pub mod types;
 
 pub mod prelude {
+	pub use crate::beet_action::*;
+	pub use crate::beet_thread::*;
 	#[cfg(feature = "io")]
 	pub use crate::discord_io::*;
 	pub use crate::discord_types::CommandExt;
 	pub use crate::discord_types::*;
-	pub use crate::beet_thread::*;
 	#[cfg(feature = "io")]
 	pub use crate::types::*;
 	pub use twilight_model::application::interaction::Interaction;

@@ -1,11 +1,6 @@
-//! Discord bot entry point.
-//!
-//! All transport details live in `discord_io/gateway` (WebSocket) and
-//! `discord_io/http` (REST). This file is purely bot logic: reacting to
-//! typed events.
 use beet::prelude::*;
+#[cfg(not(feature = "chatbot_deploy"))]
 use beet_discord::prelude::*;
-
 
 
 fn main() {
@@ -17,8 +12,9 @@ fn main() {
 				// level: Level::TRACE,
 				..default()
 			},
-			DiscordPlugin,
 			InfraPlugin,
+			#[cfg(not(feature = "chatbot_deploy"))]
+			DiscordPlugin,
 		))
 		.add_systems(Startup, setup)
 		.run();
@@ -34,28 +30,38 @@ fn setup(mut commands: Commands) {
 
 #[cfg(feature = "chatbot_deploy")]
 fn setup(mut commands: Commands) {
-	commands.spawn((stack(), stack_cli(), children![route(
-		"deploy",
-		(exchange_sequence(), children![
-			(
-				LightsailBlock::default().with_env_vars(vec![
-					Variable::process_env("DISCORD_TOKEN"),
-					Variable::process_env("OPENAI_API_KEY"),
-				]),
-				CargoBuild::default()
-					.with_release(true)
-					.with_target(BuildTarget::Zigbuild)
-					.with_example("chatbot")
-					.with_additional_args(vec![
-						"--features".into(),
-						"chatbot_aws".into(),
-					])
-					.into_build_artifact()
-			),
-			TofuApplyAction,
-			(SyncS3Bucket::new(".beet"), assets_bucket_block()),
-		]),
-	)]));
+	commands.spawn((stack(), stack_cli(), children![
+		route(
+			"watch",
+			(exchange_sequence(), children![AwsWatch::for_lightsail(
+				&stack()
+			),])
+		),
+		route(
+			"deploy",
+			(exchange_sequence(), children![
+				(
+					LightsailBlock::default().with_env_vars(vec![
+						Variable::process_env("DISCORD_TOKEN"),
+						Variable::process_env("OPENAI_API_KEY"),
+					]),
+					CargoBuild::default()
+						.with_release(true)
+						.with_target(BuildTarget::Zigbuild)
+						.with_example("chatbot")
+						.with_additional_args(vec![
+							"--features".into(),
+							"chatbot_aws".into(),
+						])
+						.into_build_artifact()
+				),
+				TofuApplyAction,
+				(SyncS3Bucket::new(".beet"), assets_bucket_block()),
+				AwsWatch::for_lightsail(&stack())
+					.with_timeout(Duration::from_secs(30)),
+			]),
+		)
+	]));
 }
 
 

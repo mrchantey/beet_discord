@@ -45,6 +45,7 @@ beet = { workspace = true, features = [
 	"net",
 	"thread",
 	"json",
+	"router",
 	"bevy_scene",
 	"infra",
 	"bindings_aws_common"
