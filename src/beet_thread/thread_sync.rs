@@ -136,7 +136,8 @@ async fn get_thread(
 			let system_prompt = bucket
 				.blob(RelPath::new("agent/system_prompt.md"))
 				.get_media()
-				.await?
+				.await
+				.map_err(|e| bevyhow!("Failed to load system prompt from bucket: {e}"))?
 				.to_string();
 
 
@@ -355,7 +356,8 @@ pub fn send_posts(
 				info!("sending {} message chunks", chunks.len());
 				for chunk in chunks {
 					let message = CreateMessage::new(channel_id).content(chunk);
-					let message = http.send(message).await?;
+					let message = http.send(message).await
+						.map_err(|e| bevyhow!("Failed to send message chunk to Discord: {e}"))?;
 					messages.push(message);
 				}
 				entity
